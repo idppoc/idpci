@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: ui-build-push-run-
+  namespace: default
+spec:
+  params:
+  - name: docker-user
+    value: sanumala123
+  - name: image-name
+    value: node-ui-app
+  - name: tag
+    value: v2
+  - name: url
+    value: https://github.com/Sathwik-Anumala/first.git
+  pipelineRef:
+    name: ui-build-push
+  workspaces:
+  - name: pipeline-ws1
+    persistentVolumeClaim:
+      claimName: tkn-pvc

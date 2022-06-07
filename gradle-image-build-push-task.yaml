@@ -1,0 +1,33 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gradle-image-build-push
+spec:
+  resources:
+    inputs:
+      - name: repo
+        type: git
+  volumes:
+  - name: registry-secret
+    secret:
+      secretName: regcred
+      items:
+      - key: .dockerconfigjson
+        path: config.json
+  steps:
+    - name: gradle-build
+      image: gradle
+      workingDir: /workspace/repo
+      command:
+        - gradle
+      args: 
+        - build
+    - name: image-build
+      image: gcr.io/kaniko-project/executor:debug
+      workingDir: /workspace/repo
+      args: 
+        - --context=/workspace/repo
+        - --destination=sanumala123/gradle-app:v4
+      volumeMounts:
+        - name: registry-secret
+          mountPath: /kaniko/.docker

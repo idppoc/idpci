@@ -1,0 +1,21 @@
+apiVersion: tekton.dev/v1beta1
+kind: PipelineRun
+metadata:
+  generateName: app-build-push-run-
+  namespace: default
+spec:
+  params:
+  - name: url
+    value: https://github.com/Sathwik-Anumala/gradle-app.git
+  - name: docker-user
+    value: sanumala123
+  - name: image-name
+    value: gradle-app
+  - name: tag
+    value: v5
+  pipelineRef:
+    name: app-build-push
+  workspaces:
+  - name: pipeline-ws1
+    persistentVolumeClaim:
+      claimName: tkn-pvc

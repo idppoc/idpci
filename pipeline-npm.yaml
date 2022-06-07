@@ -1,0 +1,45 @@
+apiVersion: tekton.dev/v1beta1
+kind: Pipeline
+metadata:
+  name: ui-build-push
+spec:
+  params:
+    - name: url
+      type: string
+      description: Git url with the source code
+    - name: docker-user
+      type: string
+      description: User name for registry
+    - name: image-name
+      type: string
+      description: Name of the image to be created
+    - name: tag
+      type: string
+      description: Tag to the created image
+  workspaces:
+    - name: pipeline-ws1
+  tasks:
+    - name: git-clone
+      params:
+        - name: url
+          value: $(params.url)
+      taskRef:
+        name: git-clone
+      workspaces:
+        - name: output
+          workspace: pipeline-ws1
+    - name: imagebuildpush
+      params:
+        - name: docker-user
+          value: $(params.docker-user)
+        - name: image-name
+          value: $(params.image-name)
+        - name: tag
+          value: $(params.tag)
+      taskRef:
+        name: build-push-image
+      workspaces:
+        - name: output
+          workspace: pipeline-ws1
+      runAfter:
+        - git-clone

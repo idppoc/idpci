@@ -1,0 +1,36 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: build-push-image-2
+spec:
+  resources:
+    inputs:
+      - name: repo
+        type: git
+  params:
+    - name: docker-user
+      type: string
+      description: User name for registry
+    - name: image-name
+      type: string
+      description: Name of the image to be created
+    - name: tag
+      type: string
+      description: Tag to the created image
+  volumes:
+  - name: registry-secret
+    secret:
+      secretName: regcred
+      items:
+      - key: .dockerconfigjson
+        path: config.json
+  steps:
+    - name: image-build
+      image: gcr.io/kaniko-project/executor:debug
+      workingDir: /workspace/repo
+      args: 
+        - --context=/workspace/repo
+        - --destination=$(params.docker-user)/$(params.image-name):$(params.tag)
+      volumeMounts:
+        - name: registry-secret
+          mountPath: /kaniko/.docker

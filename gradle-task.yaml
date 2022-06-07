@@ -1,0 +1,17 @@
+apiVersion: tekton.dev/v1beta1
+kind: Task
+metadata:
+  name: gradle
+spec:
+  resources:
+    inputs:
+      - name: repo
+        type: git
+  steps:
+    - name: gradle-build
+      image: gradle
+      workingDir: /workspace/repo
+      command:
+        - gradle
+      args: 
+        - build
