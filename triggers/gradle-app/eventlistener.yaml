@@ -1,0 +1,23 @@
+apiVersion: triggers.tekton.dev/v1beta1
+kind: EventListener
+metadata:
+  name: gradle-app-listener
+  namespace: default
+spec:
+  serviceAccountName: tekton-triggers-sa
+  triggers:
+    - name: app-trigger
+      interceptors:
+        - ref:
+            name: "github"
+          params:
+            - name: "secretRef"
+              value:
+                secretName: github-secret
+                secretKey: secretToken
+            - name: "eventTypes"
+              value: ["push"]
+      bindings:
+        - ref: gradle-pipeline-binding
+      template:
+        ref: gradle-pipeline-template

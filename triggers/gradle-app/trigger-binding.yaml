@@ -1,0 +1,15 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerBinding
+metadata:
+  name: gradle-pipeline-binding
+  namespace: default
+spec:
+  params:
+    - name: url
+      value: $(body.repository.url)
+    - name: docker-user
+      value: sanumala123
+    - name: tag
+      value: $(body.head_commit.id)
+    - name: image-name
+      value: $(body.repository.name)

@@ -1,0 +1,33 @@
+apiVersion: triggers.tekton.dev/v1alpha1
+kind: TriggerTemplate
+metadata:
+  name: gradle-pipeline-template
+  namespace: default
+spec:
+  params:
+    - name: url
+    - name: docker-user
+    - name: image-name
+    - name: tag
+  resourcetemplates:
+    - apiVersion: tekton.dev/v1beta1
+      kind: PipelineRun
+      metadata:
+        generateName: app-build-push-run-
+        namespace: default
+      spec:
+        params:
+        - name: url
+          value: $(tt.params.url)
+        - name: docker-user
+          value: $(tt.params.docker-user)
+        - name: image-name
+          value: $(tt.params.image-name)
+        - name: tag
+          value: $(tt.params.tag)
+        pipelineRef:
+          name: gradle-app-build-push
+        workspaces:
+        - name: pipeline-ws1
+          persistentVolumeClaim:
+            claimName: tkn-pvc
